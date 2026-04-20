@@ -1,0 +1,40 @@
+from collections import defaultdict
+
+class Solution:
+    def verticalTraversal(self, root: Optional[TreeNode]) -> List[List[int]]:
+        # 1. Collect nodes in the format (column, row, value)
+        node_list = []
+        
+        def dfs(node, row, col):
+            if not node:
+                return
+            node_list.append((col, row, node.val))
+            dfs(node.left, row + 1, col - 1)
+            dfs(node.right, row + 1, col + 1)
+            
+        dfs(root, 0, 0)
+        
+        # 2. Sort nodes: 
+        # Primary: Column (left to right)
+        # Secondary: Row (top to bottom)
+        # Tertiary: Value (ascending, if row/col are the same)
+        node_list.sort()
+        
+        # 3. Group nodes by column
+        ans = []
+        if not node_list:
+            return ans
+            
+        curr_col = node_list[0][0]
+        curr_group = []
+        
+        for col, row, val in node_list:
+            if col == curr_col:
+                curr_group.append(val)
+            else:
+                ans.append(curr_group)
+                curr_group = [val]
+                curr_col = col
+        
+        ans.append(curr_group) # Append the last group
+        return ans
