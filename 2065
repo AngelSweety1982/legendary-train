@@ -1,0 +1,33 @@
+from collections import defaultdict
+
+class Solution:
+    def maximalPathQuality(self, values: List[int], edges: List[List[int]], maxTime: int) -> int:
+        # Build adjacency list: u -> [(v, time), ...]
+        adj = defaultdict(list)
+        for u, v, t in edges:
+            adj[u].append((v, t))
+            adj[v].append((u, t))
+        
+        self.max_quality = 0
+        # visited tracks the count of visits to each node
+        visited = defaultdict(int)
+        visited[0] = 1
+        
+        def dfs(u, current_time, current_quality):
+            # If we returned to the start, update the global max
+            if u == 0:
+                self.max_quality = max(self.max_quality, current_quality)
+            
+            for v, t in adj[u]:
+                if current_time + t <= maxTime:
+                    # Logic: Only add value if it's the first time visiting this node
+                    new_quality = current_quality
+                    if visited[v] == 0:
+                        new_quality += values[v]
+                    
+                    visited[v] += 1
+                    dfs(v, current_time + t, new_quality)
+                    visited[v] -= 1 # Backtrack
+        
+        dfs(0, 0, values[0])
+        return self.max_quality
