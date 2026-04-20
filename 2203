@@ -1,0 +1,34 @@
+import heapq
+
+class Solution:
+    def minimumWeight(self, n: int, edges: List[List[int]], src1: int, src2: int, dest: int) -> int:
+        adj = [[] for _ in range(n)]
+        rev_adj = [[] for _ in range(n)]
+        for u, v, w in edges:
+            adj[u].append((v, w))
+            rev_adj[v].append((u, w))
+
+        def dijkstra(start_node, graph):
+            distances = [float('inf')] * n
+            distances[start_node] = 0
+            pq = [(0, start_node)]
+            
+            while pq:
+                d, u = heapq.heappop(pq)
+                if d > distances[u]:
+                    continue
+                for v, w in graph[u]:
+                    if distances[u] + w < distances[v]:
+                        distances[v] = distances[u] + w
+                        heapq.heappush(pq, (distances[v], v))
+            return distances
+
+        d1 = dijkstra(src1, adj)
+        d2 = dijkstra(src2, adj)
+        dd = dijkstra(dest, rev_adj)
+
+        ans = float('inf')
+        for i in range(n):
+            ans = min(ans, d1[i] + d2[i] + dd[i])
+
+        return ans if ans != float('inf') else -1
