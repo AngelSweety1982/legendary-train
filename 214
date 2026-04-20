@@ -1,0 +1,30 @@
+class Solution:
+    def shortestPalindrome(self, s: str) -> str:
+        if not s:
+            return s
+        
+        # Create a combined string: s + separator + reverse(s)
+        # The separator '#' ensures the longest prefix-suffix 
+        # doesn't cross the boundary of the original string.
+        rev_s = s[::-1]
+        combined = s + "#" + rev_s
+        
+        # Standard KMP LPS (Longest Prefix Suffix) calculation
+        n = len(combined)
+        lps = [0] * n
+        j = 0
+        for i in range(1, n):
+            while j > 0 and combined[i] != combined[j]:
+                j = lps[j - 1]
+            if combined[i] == combined[j]:
+                j += 1
+                lps[i] = j
+        
+        # The last value in the LPS array gives the length of the 
+        # longest prefix of 's' that is also a suffix of 'rev_s'.
+        # This is exactly the length of the longest palindromic prefix of 's'.
+        longest_palindromic_prefix_len = lps[-1]
+        
+        # Take the suffix that isn't part of the palindrome, reverse it, and prepend.
+        to_add = rev_s[:len(s) - longest_palindromic_prefix_len]
+        return to_add + s
