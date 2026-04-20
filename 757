@@ -1,0 +1,27 @@
+class Solution:
+    def intersectionSizeTwo(self, intervals: List[List[int]]) -> int:
+        # 1. Sort by end point (ascending), then by start point (descending)
+        # Narrower intervals with the same end are prioritized.
+        intervals.sort(key=lambda x: (x[1], -x[0]))
+        
+        # 2. Track the last two points added to our set
+        # Initialize with -1 since intervals are non-negative
+        s, e = -1, -1
+        ans = 0
+        
+        for a, b in intervals:
+            # Case 1: Current interval [a, b] already contains both s and e
+            if a <= s:
+                continue
+            
+            # Case 2: Current interval [a, b] contains neither s nor e
+            if a > e:
+                ans += 2
+                s, e = b - 1, b  # Add the two largest possible values
+            
+            # Case 3: Current interval [a, b] contains only e
+            else:
+                ans += 1
+                s, e = e, b      # Add the largest possible value
+                
+        return ans
