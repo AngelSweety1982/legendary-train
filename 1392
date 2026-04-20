@@ -1,0 +1,19 @@
+class Solution:
+    def longestPrefix(self, s: str) -> str:
+        n = len(s)
+        lps = [0] * n
+        j = 0 # length of the previous longest prefix suffix
+        
+        for i in range(1, n):
+            # If characters don't match, backtrack j
+            while j > 0 and s[i] != s[j]:
+                j = lps[j - 1]
+            
+            # If characters match, increment j
+            if s[i] == s[j]:
+                j += 1
+                lps[i] = j
+        
+        # The last value in lps tells us the length of the longest 
+        # prefix that is also a suffix for the whole string.
+        return s[:lps[-1]]
